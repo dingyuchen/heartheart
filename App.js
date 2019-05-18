@@ -1,19 +1,56 @@
 import React from "react";
 import { Text, View, TouchableOpacity, Image } from "react-native";
+import Welcome from "./src/screens/Welcome.js";
+import { AudioRecorder, AudioUtils } from 'react-native-audio'
 import styles from "./styles";
 
-import Welcome from "./src/screens/Welcome.js";
 
 export default class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      first_time: false,
-      message: "Start Recording",
-      isRecording: false,
-      debug: "default state"
+    constructor(props) {
+        super(props);
+        this.state = {
+            first_time: false,
+            message: "Start Recording",
+            isRecording: false,
+            debug: "default state"
+        };
+    }
+
+    componentDidMount = () => {
+        AudioRecorder.requestAuthorization().then(isAuthorized => {
+            this.prepareRecordingPath(this.state.audioPath);
+
+            AudioRecorder.onProgress = data => {
+                this.setState({debug: "recording in progress"});
+            }
+
+            AudioRecorder.onFinished = data => {
+                this.setState({debug: "recording completed"});
+            }
+        });
+    }
+
+    prepareRecordingPath = (path) => {
+        console.log("prepareRecordingPath");
+        AudioRecorder.prepareRecordingAtPath(path, {
+            SampleRate: 22050,
+            Channels: 1,
+            AudioQuality: "Low",
+            AudioEncoding: "aac",
+            AudioEncodingRate: 32000,
+        });
+    }
+
+    // this is a useless function now
+    onPress = () => {
+        const { isRecording } = this.state;
+        console.log(isRecording);
+        this.setState({
+            debug: "onPress activated",
+            isRecording: !isRecording
+        });
     };
-  }
+  
 
   onPress = () => {
     const { isRecording } = this.state;
@@ -24,23 +61,20 @@ export default class App extends React.Component {
     });
   };
 
-  onPressIn = () => {
-    const { isRecording } = this.state;
-    this.setState({
-      message: "Recording.........",
-      isRecording: !isRecording,
-      debug: "onPressIn activated"
-    });
-  };
+    onPressOut = () => {
+        const { isRecording } = this.state;
+        try {
+            const filePath = await AudioRecorder.stopRecording();
+        } catch (err) {
+            console.log(err);
+        }
 
-  onPressOut = () => {
-    const { isRecording } = this.state;
-    this.setState({
-      message: "Recording stopped",
-      isRecording: !isRecording,
-      debug: "onPressOut activated"
-    });
-  };
+        this.setState({
+            message: "Recording stopped",
+            isRecording: !isRecording,
+            debug: "onPressOut activated"
+        });
+    };
 
   render() {
     const { first_time, message, debug, isRecording } = this.state;
