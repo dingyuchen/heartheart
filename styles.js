@@ -9,6 +9,11 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 33
+    },
+    recordButton: {
+        width: 400,
+        justifyContent:'center',
+        alignItems:'center',
     }
 });
 
