@@ -1,0 +1,11 @@
+# Default ignore files
+node_modules/**/*
+.expo/*
+npm-debug.*
+*.jks
+*.p12
+*.key
+*.mobileprovision
+
+# Ignore Ding's vim files
+*.swp
