@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, View, TouchableOpacity } from "react-native";
+import { Text, View, TouchableOpacity, Image } from "react-native";
 import styles from "./styles";
 
 import Welcome from "./src/screens/Welcome.js";
@@ -44,14 +44,17 @@ export default class App extends React.Component {
 
     render() {
         const { first_time, message, debug } = this.state;
+        const imgSrc = isRecording ? "./assets/clicked_heart.png" : "./assets/heart.png";
         return (
             <View style={styles.container}>
                 {/* first line is hidden under status bar due branson's tricky screen */}
                 {first_time ? <Welcome /> : null}
                 <TouchableOpacity
+                    style={styles.recordButton}
                     onPressIn={this.onPressIn}
                     onPressOut={this.onPressOut}
                 >
+                    <Image source={require(imgSrc)}/>
                     <Text>{message} </Text>
                 </TouchableOpacity>
                 <Text style={styles.text}>{debug}</Text>
