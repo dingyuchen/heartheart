@@ -8,9 +8,10 @@ export default class Result extends React.Component {
   }
 
   render() {
+    const {heartbeat} = this.props;
     return (
       <View style={styles.container}>
-        <Text>Shows results</Text>
+        <Text>Congratulations, you have a: {heartbeat} cardiac pattern !!</Text>
       </View>
     );
   }

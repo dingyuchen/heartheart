@@ -1,13 +1,7 @@
 import React from "react";
-import {
-  Text,
-  View,
-  TouchableOpacity,
-  Image,
-  PermissionsAndroid
-} from "react-native";
+import { Text, View, TouchableOpacity, Image } from "react-native";
+import { Audio, Permissions } from "expo";
 import Welcome from "./src/screens/Welcome.js";
-import { AudioRecorder, AudioUtils } from "react-native-audio";
 import styles from "./styles";
 
 export default class App extends React.Component {
@@ -18,108 +12,51 @@ export default class App extends React.Component {
       message: "Start Recording",
       isRecording: false,
       debug: "default state",
-      isAuthorized: false,
-      audioPath: AudioUtils.DocumentDirectoryPath,
-      audioSettings: {
-        SampleRate: 22050,
-        Channels: 1,
-        AudioQuality: "Low",
-        AudioEncoding: "aac",
-        AudioEncodingRate: 32000
-        // SampleRate: 22050,
-        // Channels: 1,
-        // AudioQuality: "Low",
-        // AudioEncoding: "aac",
-        // MeteringEnabled: true,
-        // IncludeBase64: true,
-        // AudioEncodingBitRate: 32000
-      }
+      isAuthorized: false
     };
+    this.recording = null;
+    this.recordingSetting = JSON.parse(
+      JSON.stringify(Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY)
+    );
   }
 
   componentDidMount() {
-    this.checkPermission().then(async isAuthorized => {
-      console.log("permission checked");
-      this.setState({ isAuthorized });
-      if (!isAuthorized) return;
-      await AudioRecorder.prepareRecordingAtPath(
-        this.state.audioPath,
-        this.state.audioSettings
-      );
-      AudioRecorder.onProgress = data => {
-        console.log(data, "onProgress data");
-      };
-      AudioRecorder.onFinished = data => {
-        console.log(data, "on finish");
-      };
-    });
+    this._askForPermissions();
   }
 
-  checkPermission() {
-    if (Platform.OS !== "android") {
-      return Promise.resolve(true);
-    }
-    const rationale = {
-      title: "Microphone Permission",
-      message:
-        "AudioExample needs access to your microphone so you can record audio."
-    };
-    return PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-      rationale
-    ).then(result => {
-      console.log("Permission result:", result);
-      return result === true || result === PermissionsAndroid.RESULTS.GRANTED;
+  _askForPermissions = async () => {
+    const response = await Permissions.askAsync(Permissions.AUDIO_RECORDING);
+    this.setState({
+      haveRecordingPermissions: response.status === "granted"
     });
-  }
+  };
 
-  // prepareRecordingPath = path => {
-  //   console.log("prepareRecordingPath");
-  //   AudioRecorder.prepareRecordingAtPath(path, {
-  //     SampleRate: 22050,
-  //     Channels: 1,
-  //     AudioQuality: "Low",
-  //     AudioEncoding: "aac",
-  //     AudioEncodingRate: 32000
-  //   });
-  // };
-
-  // this is a useless function now
-
-  onPress = () => {
+  onPressIn = async () => {
     const { isRecording } = this.state;
     console.log(isRecording);
+    /* set audio settings */
+    await Audio.setAudioModeAsync({
+      allowsRecordingIOS: true,
+      interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
+      playsInSilentModeIOS: true,
+      shouldDuckAndroid: true,
+      interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX
+    });
+
+    const recording = new Audio.Recording();
+    await recording.prepareToRecordAsync(this.recordingSetting);
+    this.recording = recording;
+
     this.setState({
-      debug: "onPress activated",
+      debug: "should start recording",
       isRecording: !isRecording
     });
   };
 
-  handleAudio = async () => {
-    const { isRecording } = this.state;
-    if (!isRecording) {
-      this.setState({
-        isRecording: true
-      });
-      await AudioRecorder.startRecording();
-    } else {
-      this.setState({ startAudio: false });
-      await AudioRecorder.stopRecording();
-      const { audioPath } = this.state;
-      const fileName = "heartbeat.aac";
-      console.log(fileName + "to be stored");
-      const file = {
-        uri: Platform.OS === "ios" ? audioPath : `file://${audioPath}`,
-        name: fileName,
-        type: `audio/aac`
-      };
-    }
-  };
-
-  onPressOut = () => {
+  onPressOut = async () => {
     const { isRecording } = this.state;
     try {
-      const filePath = AudioRecorder.stopRecording();
+      this.recording.stopAndUnloadAsync();
     } catch (err) {
       console.log(err);
     }
@@ -127,7 +64,7 @@ export default class App extends React.Component {
     this.setState({
       message: "Recording stopped",
       isRecording: !isRecording,
-      debug: "onPressOut activated"
+      debug: this.recording.getURI()
     });
   };
 
@@ -139,10 +76,10 @@ export default class App extends React.Component {
         {first_time ? <Welcome /> : null}
         <TouchableOpacity
           style={styles.recordButton}
-          // onPressIn={this.onPressIn}
-          onPressIn={this.handleAudio}
-          onPressOut={this.handleAudio}
-          // onPressOut={this.onPressOut}
+          onPressIn={this.onPressIn}
+          // onPressIn={this.handleAudio}
+          // onPressOut={this.handleAudio}
+          onPressOut={this.onPressOut}
         >
           {isRecording ? (
             <Image source={require("./assets/clicked_heart.png")} />
