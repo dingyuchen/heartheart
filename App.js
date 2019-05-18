@@ -13,7 +13,8 @@ export default class App extends React.Component {
         return (
             <View style={styles.container}>
                 <Text>Hey branson is this hot-reloading working?</Text>
-                <Welcome />
+                <Text>Hey branson is this hot-reloading working?</Text>
+                <Text>Hey branson is this hot-reloading working?</Text>
             </View>
         );
     }
