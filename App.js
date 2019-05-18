@@ -4,8 +4,6 @@ import Welcome from "./src/screens/Welcome.js";
 import { AudioRecorder, AudioUtils } from 'react-native-audio'
 import styles from "./styles";
 
-const audioPath = AudioUtils.DocumentDirectoryPath + 'temp.wav';
-
 
 export default class App extends React.Component {
     constructor(props) {
@@ -16,6 +14,31 @@ export default class App extends React.Component {
             isRecording: false,
             debug: "default state"
         };
+    }
+
+    componentDidMount = () => {
+        AudioRecorder.requestAuthorization().then(isAuthorized => {
+            this.prepareRecordingPath(this.state.audioPath);
+
+            AudioRecorder.onProgress = data => {
+                this.setState({debug: "recording in progress"});
+            }
+
+            AudioRecorder.onFinished = data => {
+                this.setState({debug: "recording completed"});
+            }
+        });
+    }
+
+    prepareRecordingPath = (path) => {
+        console.log("prepareRecordingPath");
+        AudioRecorder.prepareRecordingAtPath(path, {
+            SampleRate: 22050,
+            Channels: 1,
+            AudioQuality: "Low",
+            AudioEncoding: "aac",
+            AudioEncodingRate: 32000,
+        });
     }
 
     // this is a useless function now
@@ -39,6 +62,12 @@ export default class App extends React.Component {
 
     onPressOut = () => {
         const { isRecording } = this.state;
+        try {
+            const filePath = await AudioRecorder.stopRecording();
+        } catch (err) {
+            console.log(err);
+        }
+
         this.setState({
             message: "Recording stopped",
             isRecording: !isRecording,
