@@ -1,8 +1,11 @@
 import React from "react";
 import { Text, View, TouchableOpacity } from "react-native";
+import Welcome from "./src/screens/Welcome.js";
+import { AudioRecorder, AudioUtils } from 'react-native-audio'
 import styles from "./styles";
 
-import Welcome from "./src/screens/Welcome.js";
+const audioPath = AudioUtils.DocumentDirectoryPath + 'temp.wav';
+
 
 export default class App extends React.Component {
     constructor(props) {
@@ -15,6 +18,7 @@ export default class App extends React.Component {
         };
     }
 
+    // this is a useless function now
     onPress = () => {
         const { isRecording } = this.state;
         console.log(isRecording);
