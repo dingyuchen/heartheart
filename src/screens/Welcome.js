@@ -1,10 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import Welcome from './src/screens/Welcome.js';
-
-export default class App extends React.Component {
-    first_time = true;
+export default class Welcome extends React.Component {
     constructor(props) {
         super(props);
     }
@@ -12,8 +9,7 @@ export default class App extends React.Component {
     render() {
         return (
             <View style={styles.container}>
-                <Text>Hey branson is this hot-reloading working?</Text>
-                <Welcome />
+                <Text>This should be the tutorial to show how to use the app</Text>
             </View>
         );
     }
@@ -21,7 +17,6 @@ export default class App extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
-        fontSize: 33,
         flex: 1,
         backgroundColor: '#fff',
         alignItems: 'center',
