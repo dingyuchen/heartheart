@@ -1,7 +1,8 @@
-import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import React from "react";
+import { Text, View, TouchableOpacity } from "react-native";
+import styles from "./styles";
 
-import Welcome from './src/screens/Welcome.js';
+import Welcome from "./src/screens/Welcome.js";
 
 export default class App extends React.Component {
     constructor(props) {
@@ -21,7 +22,7 @@ export default class App extends React.Component {
             debug: "onPress activated",
             isRecording: !isRecording
         });
-    }
+    };
 
     onPressIn = () => {
         const { isRecording } = this.state;
@@ -30,7 +31,7 @@ export default class App extends React.Component {
             isRecording: !isRecording,
             debug: "onPressIn activated"
         });
-    }
+    };
 
     onPressOut = () => {
         const { isRecording } = this.state;
@@ -39,31 +40,22 @@ export default class App extends React.Component {
             isRecording: !isRecording,
             debug: "onPressOut activated"
         });
-    }
+    };
 
     render() {
-        const {first_time, message, debug} = this.state;
+        const { first_time, message, debug } = this.state;
         return (
             <View style={styles.container}>
                 {/* first line is hidden under status bar due branson's tricky screen */}
-                { first_time ? <Welcome /> : null }
-                <TouchableOpacity onPressIn={this.onPressIn} onPressOut={this.onPressOut}>
-                    < Text>{message} </Text>
-                </TouchableOpacity >
+                {first_time ? <Welcome /> : null}
+                <TouchableOpacity
+                    onPressIn={this.onPressIn}
+                    onPressOut={this.onPressOut}
+                >
+                    <Text>{message} </Text>
+                </TouchableOpacity>
                 <Text style={styles.text}>{debug}</Text>
             </View>
         );
     }
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    text: {
-        fontSize: 33,
-    }
-});
