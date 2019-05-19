@@ -102,6 +102,29 @@ export default class App extends React.Component {
     }
   };
 
+  sendFile = () => {
+    const file = {
+      uri: this.fileLoc,
+      name: "heartbeat.m4a",
+      type: "multipart/form-data"
+    };
+
+    const body = new FormData();
+    body.append(file);
+
+    fetch(BACKEND_API, {
+      method: "POST",
+      body
+    })
+      .then(res => res.json())
+      .then(res => {
+        this.setState({
+          isComplete: true,
+          debug: res.data.hearthealth
+        });
+      });
+  };
+
   _stopPlaybackAndBeginRecording = async () => {
     this.setState({
       isLoading: true
@@ -176,31 +199,13 @@ export default class App extends React.Component {
     // );
     // this.sound = sound;
 
-    const file = {
-      uri: this.fileLoc,
-      name: "heartbeat.m4a",
-      type: "multipart/form-data"
-    };
-
-    const body = new FormData();
-    body.append(file);
-
-    fetch(BACKEND_API, {
-      method: "POST",
-      body
-    })
-      .then(res => res.json())
-      .then(res => {
-        this.setState({
-          isComplete: true,
-          debug: res.data.hearthealth
-        });
-      });
-
-    this.setState({
-      isLoading: false,
-      isRecording: false
-    });
+    this.setState(
+      {
+        isLoading: false,
+        isRecording: false
+      },
+      this.sendFile
+    );
   };
 
   _onRecordPressed = () => {
