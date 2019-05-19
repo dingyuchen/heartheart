@@ -35,6 +35,8 @@ export default class App extends React.Component {
       shouldPlay: false,
       isPlaying: false,
       isRecording: false,
+      isComplete: false,
+
       fontLoaded: false,
       shouldCorrectPitch: true,
       volume: 1.0,
@@ -322,6 +324,14 @@ export default class App extends React.Component {
   }
 
   render() {
+    return this.isComplete ? (
+      <Result backButton={this.toggleComplete} heartbeat="normal" />
+    ) : (
+      this.renderInterface()
+    );
+  }
+
+  renderInterface() {
     console.log("tojsdflsdkfjsdfs");
     return !this.state.haveRecordingPermissions ? (
       <View style={styles.container}>
@@ -343,7 +353,7 @@ export default class App extends React.Component {
           ) : (
             <Image source={require("./assets/heart.png")} />
           )}
-          <Text>{"hello"}</Text>
+          <Text>{"Recording"}</Text>
         </TouchableOpacity>
       </View>
     );
