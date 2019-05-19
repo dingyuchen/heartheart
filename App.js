@@ -14,7 +14,7 @@ const { width: DEVICE_WIDTH, height: DEVICE_HEIGHT } = Dimensions.get("window");
 const BACKGROUND_COLOR = "#FFF8ED";
 const LIVE_COLOR = "#FF0000";
 const RATE_SCALE = 3.0;
-const BACKEND_API = "localhost:5000/uploader";
+const BACKEND_API = `http://127.0.0.1:5000/uploader`
 
 export default class App extends React.Component {
   constructor(props) {
@@ -122,7 +122,8 @@ export default class App extends React.Component {
           isComplete: true,
           debug: res.data.hearthealth
         });
-      });
+      })
+      .catch(err => console.log(err));
   };
 
   _stopPlaybackAndBeginRecording = async () => {
