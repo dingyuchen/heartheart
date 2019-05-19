@@ -4,6 +4,14 @@ import Welcome from "./src/screens/Welcome.js";
 import { AudioRecorder, AudioUtils } from 'react-native-audio'
 import styles from "./styles";
 
+<<<<<<< Updated upstream
+=======
+const { width: DEVICE_WIDTH, height: DEVICE_HEIGHT } = Dimensions.get("window");
+const BACKGROUND_COLOR = "#FFF8ED";
+const LIVE_COLOR = "#FF0000";
+const RATE_SCALE = 3.0;
+const BACKEND_API = "127.0.0.1:5000/uploader";
+>>>>>>> Stashed changes
 
 export default class App extends React.Component {
     constructor(props) {
@@ -51,8 +59,22 @@ export default class App extends React.Component {
         });
     };
 
+<<<<<<< Updated upstream
     onPressIn = () => {
         const { isRecording } = this.state;
+=======
+    const body = new FormData();
+    for(var name in file) {
+      body.append(name, file[name]);
+    }
+
+    fetch(BACKEND_API, {
+      method: "POST",
+      body
+    })
+      .then(res => res.json())
+      .then(res => {
+>>>>>>> Stashed changes
         this.setState({
             message: "Recording.........",
             isRecording: !isRecording,
