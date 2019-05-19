@@ -1,0 +1,10 @@
+Flask==0.10.1
+pandas
+librosa
+matplotlib
+numpy
+keras
+sklearn
+tensorflow
+pydub
+ffmpeg
