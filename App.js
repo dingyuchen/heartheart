@@ -14,6 +14,7 @@ const { width: DEVICE_WIDTH, height: DEVICE_HEIGHT } = Dimensions.get("window");
 const BACKGROUND_COLOR = "#FFF8ED";
 const LIVE_COLOR = "#FF0000";
 const RATE_SCALE = 3.0;
+const BACKEND_API = "localhost:5000/uploader";
 
 export default class App extends React.Component {
   constructor(props) {
@@ -22,6 +23,7 @@ export default class App extends React.Component {
     this.sound = null;
     this.isSeeking = false;
     this.shouldPlayAtEndOfSeek = false;
+    this.fileLoc = "";
     this.state = {
       haveRecordingPermissions: false,
       isLoading: false,
@@ -147,6 +149,7 @@ export default class App extends React.Component {
       this.recording.getStatusAsync().then(res => console.log(res));
       console.log("couldn't unload?");
     } finally {
+      this.fileLoc = this.recording.getURI();
       const info = await FileSystem.getInfoAsync(this.recording.getURI());
       console.log(`FILE INFO: ${JSON.stringify(info, 2)}`);
     }
@@ -170,6 +173,28 @@ export default class App extends React.Component {
     //   this._updateScreenForSoundStatus
     // );
     // this.sound = sound;
+
+    const file = {
+      uri: this.fileLoc,
+      name: "heartbeat.m4a",
+      type: "multipart/form-data"
+    };
+
+    const body = new FormData();
+    body.append(file);
+
+    fetch(BACKEND_API, {
+      method: "POST",
+      body
+    })
+      .then(res => res.json())
+      .then(res => {
+        this.setState({
+          isComplete: true,
+          debug: res.data.hearthealth
+        });
+      });
+
     this.setState({
       isLoading: false,
       isRecording: false
