@@ -39,7 +39,7 @@ export default class App extends React.Component {
       rate: 1.0
     };
     this.recordingSettings = JSON.parse(
-      JSON.stringify(Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY)
+      JSON.stringify(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY)
     );
     // // UNCOMMENT THIS TO TEST maxFileSize:
     // this.recordingSettings.android['maxFileSize'] = 12000;
@@ -123,12 +123,15 @@ export default class App extends React.Component {
     const recording = new Audio.Recording();
     console.log(recording);
     await recording.prepareToRecordAsync(this.recordingSettings);
+    // recording.getStatusAsync().then((res) => console.log(res));
     recording.setOnRecordingStatusUpdate(this._updateScreenForRecordingStatus);
 
     this.recording = recording;
-    await this.recording.startAsync(); // Will call this._updateScreenForRecordingStatus to update the screen.
+    await this.recording.startAsync(this._updateScreenForRecordingStatus); // Will call this._updateScreenForRecordingStatus to update the screen.
+    this.recording.getStatusAsync().then(res => console.log(res));
     this.setState({
-      isLoading: false
+      isLoading: false,
+      isRecording: true
     });
   };
 
@@ -138,8 +141,10 @@ export default class App extends React.Component {
     });
     try {
       await this.recording.stopAndUnloadAsync();
+      this.recording.getStatusAsync().then(res => console.log(res));
     } catch (error) {
       // Do nothing -- we are already unloaded.
+      this.recording.getStatusAsync().then(res => console.log(res));
       console.log("couldn't unload?");
     } finally {
       const info = await FileSystem.getInfoAsync(this.recording.getURI());
@@ -166,7 +171,8 @@ export default class App extends React.Component {
     // );
     // this.sound = sound;
     this.setState({
-      isLoading: false
+      isLoading: false,
+      isRecording: false
     });
   };
 
